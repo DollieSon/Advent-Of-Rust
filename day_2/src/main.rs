@@ -1,68 +1,41 @@
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-};
+const ANSWER: i32 = 472;
+pub mod solution_1;
+pub mod solution_2;
+//answer 472
+#[cfg(test)]
+mod tests {
+    use std::time::Instant;
 
+    use crate::ANSWER;
+    use crate::solution_1::solution as sol1;
+    use crate::solution_2::solution as sol2;
+    #[test]
+    fn solution_1() {
+        println!("Starting solution 1");
+        let start = Instant::now();
+        assert_eq!(sol1(), ANSWER);
+        let dur = start.elapsed();
+        println!("Elapsed S1:{:.2?}", dur);
+    }
+    #[test]
+    fn solution_2() {
+        println!("Starting solution 2");
+        let start = Instant::now();
+        println!("Asnwer for sol 2: {}", sol2());
+        assert_eq!(sol2(), ANSWER);
+        let dur = start.elapsed();
+        println!("Elapsed S2:{:.2?}", dur);
+    }
+}
 fn main() {
-    println!("Hello, world!");
-    let mut count = 0;
-    let parsed = parse_file();
-    parsed.iter().for_each(|level| {
-        if verify_level(level) {
-            count += 1;
+    use crate::solution_1::solution_debuged as sol1;
+    use crate::solution_2::solution_debuged as sol2;
+    let res1 = sol1();
+    let res2 = sol2();
+    for (ind, item) in res1.iter().enumerate() {
+        let item2 = res2.get(ind).unwrap();
+        if *item != (*item2).0 {
+            println!("{}, {} : {}", ind, (*item2).0, (*item2).1);
         }
-    });
-    println!("{}", count);
-}
-
-fn parse_file() -> Vec<Vec<i32>> {
-    let mut res = Vec::new();
-    let file = File::open("input.txt").unwrap();
-    let reader = BufReader::new(file);
-    reader.lines().for_each(|line| {
-        res.push(parse_line(&line.unwrap()));
-    });
-    res
-}
-
-fn parse_line(line: &String) -> Vec<i32> {
-    let levels = line.split_ascii_whitespace();
-    let mut level_vec = Vec::new();
-    levels.for_each(|str| {
-        level_vec.push(str.parse().unwrap());
-    });
-    level_vec
-}
-
-fn verify_level(level: &Vec<i32>) -> bool {
-    let mut res = true;
-    let mut is_decreasing: Option<bool> = None;
-    level.windows(2).for_each(|wind| {
-        let diff = (wind[0] - wind[1]);
-        if diff.abs() > 3 || diff == 0 {
-            res = false;
-        }
-        // increasing
-        if diff < 0 {
-            match is_decreasing {
-                Some(val) => {
-                    if val != false {
-                        res = false
-                    }
-                }
-                None => is_decreasing = Some(false),
-            }
-        } else {
-            // decreasing
-            match is_decreasing {
-                Some(val) => {
-                    if val != true {
-                        res = false
-                    }
-                }
-                None => is_decreasing = Some(true),
-            }
-        }
-    });
-    res
+    }
 }
