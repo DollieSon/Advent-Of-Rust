@@ -47,10 +47,14 @@ pub mod Solution_1 {
                     // println!("checking {x1} {y1}");
                     let ch = vec.get(y1).unwrap().get(x1).unwrap();
                     if ch.eq_ignore_ascii_case(&letter.chars().nth(ind).unwrap()) == false {
+                        // println!("Wrong Letter");
                         return false;
                     }
                 }
-                (_, _) => return false,
+                (_, _) => {
+                    // println!("Out_Of_Bounds");
+                    return false;
+                }
             }
             //check if
         }
@@ -58,16 +62,18 @@ pub mod Solution_1 {
     }
     fn count_xmas(index: (usize, usize), vec: &Vec<Vec<char>>) -> u32 {
         //first check is if index == "X";
-        if let Some(v1) = vec.get(index.0) {
-            if let None = v1.get(index.1) {
-                return 0;
+        if let Some(v1) = vec.get(index.1) {
+            if let Some(ch) = v1.get(index.0) {
+                if *ch != 'X' {
+                    return 0;
+                }
             }
         } else {
             return 0;
         }
         //searching by SAM
         let directions: [[(i32, i32); 3]; 8] = [
-            [(-3, 3), (-2, 2), (-1, 0)],
+            [(-3, 3), (-2, 2), (-1, 1)],
             [(0, 3), (0, 2), (0, 1)],
             [(3, 3), (2, 2), (1, 1)],
             [(-3, 0), (-2, 0), (-1, 0)],
@@ -76,24 +82,32 @@ pub mod Solution_1 {
             [(3, -3), (2, -2), (1, -1)],
             [(3, 0), (2, 0), (1, 0)],
         ];
+        let dir_name = ["UL", "U", "UR", "L", "DL", "D", "DR", "R"];
         let mut count: u32 = 0;
-        for coords in directions {
-            if is_mas(vec, coords, index) {
+        for (ind, coords) in directions.iter().enumerate() {
+            // println!("Checking {} {:?}", dir_name[ind], coords);
+            if is_mas(vec, *coords, index) {
                 count += 1;
+                println!("Found At: {} {:?}", dir_name[ind], coords);
+                // println!("CORRECT!!");
             }
         }
         return count;
     }
 
     pub fn solution() {
-        let input_string = read_to_string("input.txt").unwrap();
+        let input_string = read_to_string("input2.txt").unwrap();
         let input_arr = str_to_vec(&input_string);
         let height = input_arr.len();
         let width = input_arr.get(0).unwrap().len();
         let mut count: u32 = 0;
         for y in 0..height {
-            println!("On Line {y} ");
+            // println!("On Line {y} ");
             for x in 0..width {
+                println!(
+                    "Checking {x} {y},{}",
+                    input_arr.get(y).unwrap().get(x).unwrap()
+                );
                 count += count_xmas((x, y), &input_arr);
             }
             // print!("\n");
